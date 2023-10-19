@@ -36,6 +36,23 @@ typedef struct global_s
 
 extern global_t global;
 
+extern int info;
+
+/**
+ * struct cmd_s - cmd
+ * @fd: file descriptor
+ * @line: line
+ */
+
+typedef struct cmd_s
+{
+	FILE *fd;
+	char *line;
+} cmd_t;
+
+extern cmd_t cmd;
+extern int value;
+
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
  * @n: integer
@@ -93,5 +110,32 @@ void free_stack(stack_t *stack);
 void free_all(void);
 void error_check(int argc, char *argv[]);
 void error_check2(char *line, unsigned int line_number);
+
+/*Trial*/
+void execute(char *argv);
+int get_opc(stack_t **stack, char *arg, char *val, int line_number);
+void push(stack_t **stack, unsigned int line_number);
+void pall(stack_t **stack, unsigned int line_number);
+void pint(stack_t **stack, unsigned int line_number);
+void pop(stack_t **stack, unsigned int line_number);
+void nop(stack_t **stack, unsigned int line_number);
+void swap(stack_t **stack, unsigned int line_number);
+void add(stack_t **stack, unsigned int line_number);
+void sub(stack_t **stack, unsigned int line_number);
+void pchar(stack_t **stack, unsigned int line_number);
+void divide(stack_t **stack, unsigned int line_number);
+void mul(stack_t **stack, unsigned int line_number);
+void mod(stack_t **stack, unsigned int line_number);
+int check_push(char *token);
+int get_value(char *token);
+char get_token(char *op, char *token);
+void _free(stack_t *stack);
+void clean_stack(stack_t **stack);
+void usage_error(void);
+void open_error(char *file);
+void push_error(FILE *fd, char *line, stack_t *stack, int line_number);
+void instr_error(FILE *fd, char *line, stack_t *stack, char *val, int line_number);
+int _isdigit(char *c);
+stack_t *createNode(int n);
 
 #endif /* MONTY_H */
