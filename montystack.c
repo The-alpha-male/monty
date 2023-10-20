@@ -3,7 +3,7 @@
 void rotr(stack_t **stack, unsigned int line_number);
 void stack(stack_t **stack, unsigned int line_number);
 void queue(stack_t **stack, unsigned int line_number);
-void free_stack(stack_t *stack);
+void free_stack(stack_t **stack);
 void free_all(void);
 
 /**
@@ -36,9 +36,8 @@ void rotr(stack_t **stack, unsigned int line_number)
 
 void stack(stack_t **stack, unsigned int line_number)
 {
-	(void)stack;
+	(*stack)->n = STACK;
 	(void)line_number;
-	global.mode = 0;
 }
 
 /**
@@ -50,9 +49,8 @@ void stack(stack_t **stack, unsigned int line_number)
 
 void queue(stack_t **stack, unsigned int line_number)
 {
-	(void)stack;
+	(*stack)->n = QUEUE;
 	(void)line_number;
-	global.mode = 1;
 }
 
 /**
@@ -61,15 +59,15 @@ void queue(stack_t **stack, unsigned int line_number)
  * Return: void
  */
 
-void free_stack(stack_t *stack)
+void free_stack(stack_t **stack)
 {
-	stack_t *temp;
+	stack_t *temp = *stack;
 
-	while (stack != NULL)
+	while (*stack)
 	{
-		temp = stack;
-		stack = stack->next;
-		free(temp);
+		temp = (*stack)->next;
+		free(*stack);
+		*stack = temp;
 	}
 }
 
@@ -80,8 +78,4 @@ void free_stack(stack_t *stack)
 
 void free_all(void)
 {
-	free(global.line);
-	fclose(global.file);
-	free_stack(global.head);
 }
-
