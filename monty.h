@@ -1,14 +1,85 @@
 #ifndef MONTY_H
 #define MONTY_H
-#define _GNU_SOURCE
+
+/* Libraries */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
-#define UNUSED(x) (void)(x)
-#define INSTRUCTIONS_COUNT 17
-#define STACK 1
-#define QUEUE 0
+#include <unistd.h>
+#include <ctype.h>
+
+
+/* Structures */
+/**
+ * struct global_s - global variables
+ * @file: file
+ * @line: line
+ * @stack: stack
+ * @queue: queue
+ * @num: number
+ * @mode: mode
+ * @head: head
+ * @tail: tail
+ * Description: global variables
+ */
+
+typedef struct global_s
+{
+	FILE *file;
+	char *line;
+	int stack;
+	int queue;
+	int num;
+	int mode;
+	struct stack_s *head;
+	struct stack_s *tail;
+} global_t;
+
+extern global_t global;
+
+extern int info;
+
+/**
+ * struct cmd_s - cmd
+ * @fd: file descriptor
+ * @line: line
+ */
+
+typedef struct cmd_s
+{
+	FILE *fd;
+	char *line;
+} cmd_t;
+
+extern cmd_t cmd;
+extern int value;
+
+**
+ * struct vars_s - holds all variables to be passed
+ * @IFO: flag to determine stack(0) or queue(1)
+ * @fname: string holding file name
+ * @fp: file pointer to open file
+ * @tokened: tokenized string of our input from file
+ * @head: head of our stack
+ * @line_number: line number that was just read from file
+ * @buf: buffer for the line in the file
+ *
+ * Description: A struct that we make global to pass variables
+ *  for stack, queues, LIFO, FIFO holberton project
+ */
+typedef struct vars_s
+{
+	int IFO;
+	char *fname;
+	FILE *fp;
+	char **tokened;
+	char *buf;
+	struct stack_s *head;
+	unsigned int line_number;
+} vars_t;
+
+extern vars_t *element;
+
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
  * @n: integer
@@ -16,8 +87,9 @@
  * @next: points to the next element of the stack (or queue)
  *
  * Description: doubly linked list node structure
- * for stack, queues, LIFO, FIFO
+ * for stack, queues, LIFO, FIFO Holberton project
  */
+
 typedef struct stack_s
 {
 	int n;
@@ -26,94 +98,78 @@ typedef struct stack_s
 } stack_t;
 
 /**
- * struct my_data_s - Struct to hold data for the Monty interpreter
- *
- * @line_number: The current line number being executed
- * @arg1: The first argument of the current line being executed (if any)
- * @arg2: The second argument of the current line being executed (if any)
- * @stack: Pointer to the top of the stack
- * @file: Pointer to the file being executed
- * @line: Pointer to the current line being executed
- * @mode: The mode of the Monty interpreter (STACK or QUEUE)
- */
-typedef struct my_data_s
-{
-	int line_number;
-	char *arg1;
-	char *arg2;
-	stack_t *stack;
-	FILE *file;
-	char *line;
-	int mode;
-} my_data_t;
-
-extern my_data_t my_data;
-/**
  * struct instruction_s - opcode and its function
  * @opcode: the opcode
  * @f: function to handle the opcode
  *
  * Description: opcode and its function
- * for stack, queues, LIFO, FIFO
+ * for stack, queues, LIFO, FIFO Holberton project
  */
+
 typedef struct instruction_s
 {
 	char *opcode;
 	void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
-/*error functions*/
-void print_open_file_error(char *file_name);
-void print_usage_error(void);
-void print_invalid_instruction_error
-					(int line_number, char *opcode_instruction);
-void print_malloc_error(void);
-void print_push_error(int line_number);
-void print_empty_stack_error(int line_number);
-void print_pint_error(int line_number);
-void print_swap_error(int line_number);
-void print_add_error(int line_number);
-void print_sub_error(int line_number);
-void print_div_error(int line_number);
-void print_div_by_zero_error(int line_number);
-void print_mul_error(int line_number);
-void print_mod_error(int line_number);
-void print_pchar_error(int line_number);
-void print_pchar_stack_empty_error(int line_number);
-/*execute functions*/
-int execute_file(char *file_name);
-void execute_line(char *line, int line_number);
 
-/*instructions*/
-void pall(stack_t **stack, unsigned int line_number);
-void pop(stack_t **stack, unsigned int line_number);
+/* Prototypes */
+
+void (*get_op(char *s))(stack_t **stack, unsigned int line_number);
 void push(stack_t **stack, unsigned int line_number);
+void pall(stack_t **stack, unsigned int line_number);
 void pint(stack_t **stack, unsigned int line_number);
+void pop(stack_t **stack, unsigned int line_number);
 void swap(stack_t **stack, unsigned int line_number);
+void add(stack_t **stack, unsigned int line_number);
 void nop(stack_t **stack, unsigned int line_number);
 void sub(stack_t **stack, unsigned int line_number);
-void add(stack_t **stack, unsigned int line_number);
-void _div(stack_t **stack, unsigned int line_number);
+void divi(stack_t **stack, unsigned int line_number);
 void mul(stack_t **stack, unsigned int line_number);
 void mod(stack_t **stack, unsigned int line_number);
 void pchar(stack_t **stack, unsigned int line_number);
 void pstr(stack_t **stack, unsigned int line_number);
 void rotl(stack_t **stack, unsigned int line_number);
 void rotr(stack_t **stack, unsigned int line_number);
-void queue(stack_t **stack, unsigned int line_number);
 void stack(stack_t **stack, unsigned int line_number);
+void queue(stack_t **stack, unsigned int line_number);
+void free_stack(stack_t *stack);
+void free_all(void);
+void error_check(int argc, char *argv[]);
+void error_check2(char *line, unsigned int line_number);
 
-/*linked list functions*/
-size_t print_stack(const stack_t *h);
-stack_t *add_dnodeint(stack_t **head, const int n);
-void free_stack(stack_t *head);
-void delete_top_node(stack_t **stack);
-stack_t *add_stackint_end(stack_t **head, const int n);
+/*trial*/
+/* Stack functions stackfunc_1.c */
+stack_t *add_stack_init(void);
+stack_t *add_stack_end(void);
+void get_tokens(char *buf);
+void pall(stack_t **stack, unsigned int line_number);
+void push(stack_t **stack, unsigned int line_number);
+/* More stack functions stackfunc_2.c */
+void pint(stack_t **stack, unsigned int line_number);
+void pop(stack_t **stack, unsigned int line_number);
+void nop(stack_t **stack, unsigned int line_number);
+void swap(stack_t **stack, unsigned int line_number);
+/* Calculation functions calc.c */
+void add(stack_t **stack, unsigned int line_number);
+void divide(stack_t **stack, unsigned int line_number);
+void mul(stack_t **stack, unsigned int line_number);
+void sub(stack_t **stack, unsigned int line_number);
+void mod(stack_t **stack, unsigned int line_number);
+/* Function finder opcode_search.c */
+void opcode_search(void);
+/* Stack function in stackfunc_3.c */
+void pchar(stack_t **stack, unsigned int line_number);
+void pstr(stack_t **stack, unsigned int line_number);
+void rotl(stack_t **stack, unsigned int line_number);
+void rotr(stack_t **stack, unsigned int line_number);
+/* Exit, free, and error handling error in free_stack.c */
+void free_buffer(void);
+void free_token(void);
+void free_list(stack_t *head);
+void exit_function(unsigned int err_num);
+/* Changes between Stack and Queue in lifo_or_fifo.c */
+void lifo(stack_t **stack, unsigned int line_number);
+void fifo(stack_t **stack, unsigned int line_number);
 
-/*helper*/
-
-void free_everything(void);
-
-int is_empty_line(char *line);
-int is_num(char *num);
-#endif /*MONTY_H*/
+#endif /* MONTY_H */
