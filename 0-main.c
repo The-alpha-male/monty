@@ -1,6 +1,5 @@
 #include "monty.h"
 
-
 global_t global = {EXIT_SUCCESS, NULL};
 
 /**
@@ -11,6 +10,7 @@ global_t global = {EXIT_SUCCESS, NULL};
  *
  * Return: EXIT_SUCCESS on success, EXIT_FAILURE otherwise
  */
+
 int main(int argc, char *argv[])
 {
 	FILE *monty_fd = NULL;
